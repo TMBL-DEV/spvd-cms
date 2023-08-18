@@ -1,72 +1,31 @@
 version: "3"
 
 services:
-  nuxt-docker-example:
-    container_name: nuxt-docker-example
+  spvd-nuxt:
+    container_name: spvd-nuxt
     build:
       target: builder
       context: ./nuxt
       dockerfile: ./Dockerfile
     env_file:
-      - .env
+      - ./nuxt/.env
     command: yarn dev --force
     volumes:
       - ./nuxt:/nuxt
 
-  # strapi:
-  #   image: strapi/strapi
-  #   restart: always
-  #   ports:
-  #     - 4000:80
-  #   volumes:
-  #     - ./strapi:/srv/app
-  #   environment:
-  #     DATABASE_CLIENT: postgres
-  #     DATABASE_HOST: db
-  #     DATABASE_PORT: 5432
-  #     DATABASE_NAME: strapi
-  #     DATABASE_USERNAME: strapi
-  #     DATABASE_PASSWORD: strapi
-  #     PORT: 80
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     - strapi-net
-  #     - traefik-gateway
-
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.docker.network=traefik-gateway"
-  #     - "traefik.http.routers.strapi.rule=Host(`strapi.nuxt-cms.localhost`)"
-  #     - "traefik.http.routers.strapi.entrypoints=http"
-  #     - "traefik.http.routers.nuxt-cms.tls=false"
-
   strapi:
-    container_name: strapi
+    container_name: spvd-strapi
     build:
       context: ./strapi
       dockerfile: ./Dockerfile
-    env_file: .env
+    env_file: ./strapi/.env
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-gateway"
-      - "traefik.http.routers.strapi.rule=Host(`strapi.nuxt-cms.localhost`)"
-      - "traefik.http.routers.strapi.entrypoints=http"
-      - "traefik.http.routers.strapi.tls=false"
-      - "traefik.http.services.strapi.loadbalancer.server.port=80"
-    ports:
-      - '4000:80'
-    # environment:
-      # DATABASE_CLIENT: ${DATABASE_CLIENT}
-      # DATABASE_HOST: db
-      # DATABASE_PORT: ${DATABASE_PORT}
-      # DATABASE_NAME: ${DATABASE_NAME}
-      # DATABASE_USERNAME: ${DATABASE_USERNAME}
-      # DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      # JWT_SECRET: ${JWT_SECRET}
-      # ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
-      # APP_KEYS: ${APP_KEYS}
-      # NODE_ENV: ${NODE_ENV}
+      - "traefik.http.routers.strapi-spvd.rule=Host(`strapi.spaargarenvandoorn.localhost`)"
+      - "traefik.http.routers.strapi-spvd.entrypoints=http"
+      - "traefik.http.routers.strapi-spvd.tls=false"
+      - "traefik.http.services.strapi-spvd.loadbalancer.server.port=80"
     volumes:
       - ./strapi/config:/opt/app/config
       - ./strapi/src:/opt/app/src
@@ -79,17 +38,13 @@ services:
       - traefik-gateway
     depends_on:
       - db
-
     
   db:
     image: postgres:14.1-alpine
-    user: 1000:1000
     environment:
       POSTGRES_USER: strapi
       POSTGRES_PASSWORD: strapi
       POSTGRES_DB: strapi
-    ports:
-      - '5432:5432'
     volumes:
       - ./db:/var/lib/postgresql/data
     networks:
@@ -100,19 +55,19 @@ services:
     image: nginx:1.15
     working_dir: /var/www/html
     depends_on:
-      - nuxt-docker-example
+      - spvd-nuxt
     networks:
       - default
       - traefik-gateway
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-gateway"
-      - "traefik.http.routers.nuxt-app-nginx.rule=Host(`nuxt-cms.localhost`)"
-      - "traefik.http.routers.nuxt-app-nginx.entrypoints=http"
-      - "traefik.http.routers.nuxt-app-nginx.tls=false"
+      - "traefik.http.routers.spvd-nuxt-nginx.rule=Host(`spaargarenvandoorn.localhost`)"
+      - "traefik.http.routers.spvd-nuxt-nginx.entrypoints=http"
+      - "traefik.http.routers.spvd-nuxt-nginx.tls=false"
+      - "traefik.http.services.spvd-nuxt-nginx.loadbalancer.server.port=80"
+
     volumes:
-      # - ./nuxt-app:/var/www/html/nuxt-app
-      # - ./config/nginx/includes:/etc/nginx/includes:ro
       - ./nuxt/nginx/nginx.conf:/etc/nginx/nginx.conf
 
 networks:
