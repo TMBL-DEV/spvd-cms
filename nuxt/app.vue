@@ -1,14 +1,18 @@
 <template>
-  <div>
-    hoi
-  </div>
+   <NuxtLayout>
+    some page content
+  </NuxtLayout>
 </template>
 <script setup lang="ts">
-useStrapiAuth().setToken(useRuntimeConfig().public.strapiToken)
-const {find} = useStrapi();
+import { blog } from './types/blog';
 
-find('blogs').then((res) => {
-  // console.log(res);
+const { find } = usePublicStrapi();
+
+find<blog>('blogs').then((res) => {
+  res.data.forEach((blog) => {
+    console.log(blog.attributes.publishedAt);
+    
+  })
 
 })
 
