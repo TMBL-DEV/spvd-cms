@@ -1,6 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxtjs/strapi', '@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/strapi', '@nuxtjs/tailwindcss', '@nuxt/content'],
+  content: {
+    watch: false,
+  },
   strapi: {
     url: process.env.STRAPI_URL,
     version: 'v4',
@@ -19,6 +22,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       strapiToken: process.env.STRAPI_API_TOKEN,
+      strapiBaseUrl: process.env.STRAPI_URL,
     }
   },
   devtools: { enabled: true },

@@ -10,6 +10,9 @@ services:
     env_file:
       - ./nuxt/.env
     command: yarn dev --force
+    networks:
+      - strapi-net
+      - traefik-gateway
     volumes:
       - ./nuxt:/nuxt
 
