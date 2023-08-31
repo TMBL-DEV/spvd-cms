@@ -4,12 +4,7 @@
             <section class="w-full mx-auto mt-9">
                 <h1 class="mt-10">Spaargaren van Doorn</h1>
                 <p class="my-6">
-                    Sinds 1984 koesteren we natuurlijke schoonheid. Van Sri
-                    Lanka tot Nederland, onze reis begon met passie en groeide
-                    uit tot duurzame kwekerijen. Bladeren, planten en innovatie
-                    bloeien bij ons. Ontdek ons unieke aanbod en onze
-                    betrokkenheid bij lokale gemeenschappen. Samen groeien we
-                    over grenzen heen.
+                   {{ data?.attributes.aboutUs }}
                 </p>
             </section>
             <section class="w-full p-8">
@@ -22,9 +17,7 @@
     </section>
 </template>
 <script setup lang="ts">
-// const createMediaUrl = () => {
-//     const baseUrl =
-// }
+ const { data } = useFetch('/api/pages/home');
 
 const mediaContent = {
     banner: {
@@ -32,4 +25,6 @@ const mediaContent = {
         src: 'large_vandoorn_5679_4f2173eee5.jpg',
     },
 };
+
+   
 </script>
