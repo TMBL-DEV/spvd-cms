@@ -13,7 +13,7 @@
                 </div>
             </div>
         </header>
-        <main class="flex grow mt-24  mx-auto">
+        <main class="flex grow mt-24 mx-auto w-full">
             <slot />
         </main>
         <footer
