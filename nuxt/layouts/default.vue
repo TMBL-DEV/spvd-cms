@@ -46,7 +46,7 @@ const navigation = reactive({
         },
         {
             text: 'Contact',
-            link: '/',
+            link: '/contact',
         },
         {
             text: 'Floriday',

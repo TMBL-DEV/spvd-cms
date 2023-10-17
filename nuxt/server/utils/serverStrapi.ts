@@ -85,7 +85,7 @@ const send = async <T>(url: string, request: RequestInit) => {
     let error = null;
     let data: null | T = null;
     let headers = null;
-    console.log(`aaaa ${url}`);
+
 
     try {
         const response = await fetch(url, request);

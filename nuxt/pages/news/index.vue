@@ -1,15 +1,16 @@
 <template>
-    <div class="bg-gradient-to-b from-green-400 via-green-300 to-white w-full">
+    <div class="bg-gradient-to-b from-primary to-secondary w-full">
         <article class="my-5 w-10/12 mx-auto">
             <section class="flex w-full mb-8 mt-4">
-                <h1 class="text-5xl text-center mx-auto my-8">Nieuws</h1>
+                <h1 class="text-5xl text-center mx-auto my-8 text-white">Nieuws</h1>
             </section>
             <section>
                 <section v-if="pending">loading</section>
-                <section v-if="data?.data">
+                <section v-if="data">
                     <section
+                        @click="router.push({ path: `/news/${blog.attributes.friendlyUrl}` });"
                         class="mx-auto w-full bg-slate-50 bg-opacity-70 border-white border-2 my-8 hover:border-green-600 cursor-pointer rounded-lg p-4 flex flex-col md:flex-row"
-                        v-for="(blog, index) in data.data"
+                        v-for="(blog, index) in data"
                         :key="index"
                     >
                         <img
@@ -39,7 +40,7 @@
                         </div>
                     </section>
                 </section>
-                <section v-if="!data?.data && !pending">
+                <section v-if="!data && !pending">
                     <p>Geen data gevonden</p>
                 </section>
             </section>
@@ -54,7 +55,7 @@ import {
 import * as blogTypes from '../../types/blog';
 import { MediaData } from '../../types/strapi';
 // useStrapiMedia()
-const { find } = useStrapi();
+const router = useRouter();
 
 const getThumbnailFromMedia = (media: {
     data: Strapi4ResponseData<MediaData>;
@@ -65,14 +66,16 @@ const getThumbnailFromMedia = (media: {
     );
 };
 
-const { data, pending, refresh, error } = await useLazyAsyncData(
-    'blogs',
-    () => {
-        useStrapiAuth().setToken(useRuntimeConfig().public.strapiToken);
-        return find<blogTypes.blog>('blogs', { populate: ['thumbnail'] });
-    },
-    { server: false }
-);
+const { data, pending, refresh, error } = await useLazyFetch<Strapi4ResponseData<blogTypes.blog>[]>('/api/blogs');
+
+// const { data, pending, refresh, error } = await useLazyAsyncData(
+//     'blogs',
+//     () => {
+//         useStrapiAuth().setToken(useRuntimeConfig().public.strapiToken);
+//         return find<blogTypes.blog>('blogs', { populate: ['thumbnail'] });
+//     },
+//     { server: false }
+// );
 
 const gotoBlog = (blog: Strapi4ResponseData<blogTypes.blog>) => {
     useRouter().push({ path: `/news/${blog.attributes.friendlyUrl}` });

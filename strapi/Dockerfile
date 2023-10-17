@@ -6,7 +6,8 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /opt/
 COPY package.json yarn.lock ./
-RUN yarn config set network-timeout 600000 -g && yarn install
+RUN npm install -g node-gyp
+RUN yarn config set network-timeout 600000 -g && yarn install && yarn add @strapi/provider-email-nodemailer
 ENV PATH /opt/node_modules/.bin:$PATH
 
 WORKDIR /opt/app
