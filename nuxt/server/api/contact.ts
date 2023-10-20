@@ -1,29 +1,23 @@
 import * as server from '../utils/serverStrapi';
-import * as blogType from '../../types/blog';
-import {
-    Strapi4ResponseData,
-    Strapi4ResponseMany,
-    Strapi4ResponseSingle,
-} from '@nuxtjs/strapi/dist/runtime/types';
 import { z } from 'zod';
-import { error } from 'console';
 
 const ContactForm = z.object({
-    email: z.coerce.string().email('incorrect-email'),
-    content: z.coerce.string().min(5, 'short-content'),
+    email: z.coerce.string().min(1, 'Mist mail').email('incorrecte email'),
+    content: z.coerce.string().min(5, 'Te weinig ingevuld (minimaal 5 characters)'),
 });
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
-    console.log(body);
-    
+    const body = await readBody(event);    
     const contactForm = ContactForm.safeParse(body);
 
-    if (!contactForm.success) {
-        throw createError(contactForm.error);
+    if (!contactForm.success) {  
+        console.log(contactForm.error.format());
+        // setResponseStatus(event, 400, "reee");
+        return sendError(event, createError({message: 'Contact Formulier incorrect', data: contactForm.error.format(), statusCode: 400, statusMessage: 'help me'}));
     }
 
     const { email, content } = contactForm.data;
+    
     const formdata = new FormData();
     formdata.append(
         'data',
@@ -33,19 +27,9 @@ export default defineEventHandler(async (event) => {
         })
     );
 
-    try {
-        const response = await server
-            .useStrapiFetch()
-            .post('/contact-entries', {
-                body: formdata,
-            });
-
-        if(!response.ok){
-            throw error('failed')
-        }
-
-        return true
-    } catch (error) {
-        return createError(`error`);
-    }
+    return server
+    .useStrapiFetch()
+    .post('/contact-entries', {
+        body: formdata,
+    });
 });

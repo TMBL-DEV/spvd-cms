@@ -41,7 +41,7 @@
                     </section>
                 </section>
                 <section v-if="!data && !pending">
-                    <p>Geen data gevonden</p>
+                    <p>Geen Nieuws </p>
                 </section>
             </section>
         </article>

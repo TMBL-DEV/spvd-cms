@@ -12,11 +12,11 @@
     "@nuxt/content": "^2.7.2",
     "@nuxt/devtools": "latest",
     "@nuxtjs/strapi": "^1.9.3",
-    "@nuxtjs/tailwindcss": "^6.8.0",
     "@types/node": "^18",
     "nuxt": "^3.6.1"
   },
   "dependencies": {
+    "@nuxt/ui": "^2.9.0",
     "superjson": "^1.13.3",
     "zod": "^3.22.4"
   }
