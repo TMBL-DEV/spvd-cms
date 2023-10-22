@@ -5,22 +5,41 @@ import {
     Strapi4ResponseMany,
     Strapi4ResponseSingle,
 } from '@nuxtjs/strapi/dist/runtime/types';
+import { useStrapiQL } from '../../utils/graphqlStrapi';
+import { HOMEPAGE_QUERY } from '../../../utils/graphql/queries/homePageQuery';
 
 export default defineEventHandler(async (event) => {
-    // DO NOT REMOVE ITS A PERFECT EXAMPLE!!
-    // const blog = await server.useStrapiFetch().get<blogType.blog>('/blogs', {
-    //     'filters[friendlyUrl][$contains]': "da"
+    //  const { data } = useFetch('/api/home-page');
+    const client = useStrapiQL();
 
-    // });
-    // return blog;
+    type AboutUsContentSections = {
+        id: string;
+        heading: string;
+        paragraph: string;
+        optionalMedia: MediaItem;
+    };
 
-    const { data, error } = await server
-        .useStrapiFetch()
-        .get<Strapi4ResponseData<{ aboutUs: string }>>('/home-page');
-
-    if (error) {
-        throw error;
+    type MediaItem = {
+        data: {
+            attributes: {
+                url: string,
+                alternativeText: string
+            }
+        }
     }
 
-    return data;
+    type homePageType = {
+        homePage: {
+            data: {
+                attributes: {
+                    title: string;
+                    aboutUsContentSections: AboutUsContentSections[];
+                    mainPoint: MediaItem
+                };
+            };
+        } | null;
+    };
+
+
+    return client<homePageType>(HOMEPAGE_QUERY);
 });

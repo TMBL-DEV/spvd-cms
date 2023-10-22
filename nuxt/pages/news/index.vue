@@ -1,29 +1,28 @@
 <template>
-    <div class="bg-gradient-to-b from-primary to-secondary w-full">
+    <div class="bg-gradient-to-b from-primary to-side-color w-full">
         <article class="my-5 w-10/12 mx-auto">
             <section class="flex w-full mb-8 mt-4">
-                <h1 class="text-5xl text-center mx-auto my-8 text-white">Nieuws</h1>
+                <h1 class="text-5xl text-center mx-auto my-8 text-white">
+                    Nieuws
+                </h1>
             </section>
             <section>
                 <section v-if="pending">loading</section>
                 <section v-if="data">
                     <section
-                        @click="router.push({ path: `/news/${blog.attributes.friendlyUrl}` });"
-                        class="mx-auto w-full bg-slate-50 bg-opacity-70 border-white border-2 my-8 hover:border-green-600 cursor-pointer rounded-lg p-4 flex flex-col md:flex-row"
-                        v-for="(blog, index) in data"
+                        @click="gotoBlog(blog)"
+                        class="mx-auto w-full bg-white border-white border-2 my-8 hover:border-green-600 cursor-pointer rounded-lg p-4 flex flex-col md:flex-row"
+                        v-for="(blog, index) in data.blogs.data"
                         :key="index"
                     >
                         <img
-                            class="rounded-lg mx-1 "
+                            class="rounded-lg mx-1"
                             loading="lazy"
                             v-if="blog.attributes.thumbnail !== null"
                             :src="
                                 getThumbnailFromMedia(blog.attributes.thumbnail)
                             "
-                            :alt="
-                                blog.attributes.thumbnail.data.attributes
-                                    .caption
-                            "
+                            :alt="blog.attributes.thumbnail.data.attributes.alternativeText"
                         />
                         <div class="mx-6 flex flex-col">
                             <NuxtLink
@@ -41,7 +40,7 @@
                     </section>
                 </section>
                 <section v-if="!data && !pending">
-                    <p>Geen Nieuws </p>
+                    <p>Geen Nieuws</p>
                 </section>
             </section>
         </article>
@@ -54,8 +53,6 @@ import {
 } from '@nuxtjs/strapi/dist/runtime/types';
 import * as blogTypes from '../../types/blog';
 import { MediaData } from '../../types/strapi';
-// useStrapiMedia()
-const router = useRouter();
 
 const getThumbnailFromMedia = (media: {
     data: Strapi4ResponseData<MediaData>;
@@ -66,16 +63,9 @@ const getThumbnailFromMedia = (media: {
     );
 };
 
-const { data, pending, refresh, error } = await useLazyFetch<Strapi4ResponseData<blogTypes.blog>[]>('/api/blogs');
 
-// const { data, pending, refresh, error } = await useLazyAsyncData(
-//     'blogs',
-//     () => {
-//         useStrapiAuth().setToken(useRuntimeConfig().public.strapiToken);
-//         return find<blogTypes.blog>('blogs', { populate: ['thumbnail'] });
-//     },
-//     { server: false }
-// );
+const { data, error, pending } = await useAsyncData('home-page-data', () => $fetch('/api/blogs'));
+
 
 const gotoBlog = (blog: Strapi4ResponseData<blogTypes.blog>) => {
     useRouter().push({ path: `/news/${blog.attributes.friendlyUrl}` });

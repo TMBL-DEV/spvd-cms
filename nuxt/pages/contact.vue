@@ -1,6 +1,8 @@
 <template>
     <section class="flex bg-gradient-to-b from-primary to-side-color w-full">
-        <div class="w-10/12 mx-auto flex flex-col gap-10 justify-center">
+        <div
+            class="w-full md:w-10/12 mx-auto flex flex-col gap-10 justify-center"
+        >
             <UCard
                 class="w-full"
                 :ui="{
@@ -34,7 +36,13 @@
                             class="my-2"
                         />
                     </UFormGroup>
-                    <UButton class="my-2" type="submit"> Submit </UButton>
+                    <input type="text" hidden />
+                    <UButton
+                        class="my-2 w-full md:w-auto text-center"
+                        type="submit"
+                    >
+                        <p class="w-full">Submit</p>
+                    </UButton>
                 </UForm>
                 <template #footer> </template>
             </UCard>
@@ -42,7 +50,11 @@
     </section>
 </template>
 <script setup lang="ts">
-import type { Form, FormError, FormSubmitEvent } from '@nuxt/ui/dist/runtime/types';
+import type {
+    Form,
+    FormError,
+    FormSubmitEvent,
+} from '@nuxt/ui/dist/runtime/types';
 import { NuxtError } from 'nuxt/app';
 
 const state = ref({
@@ -50,52 +62,59 @@ const state = ref({
     password: undefined,
 });
 const form = ref();
-const globalError = ref();
 
 const contactForm = ref({
     email: '',
     content: '',
+    other: null,
 });
 
+const toast = useToast();
+
 const submit = async (e: any) => {
-    // form.value.clearErrors()
     const { email, content } = contactForm.value;
 
-    const { data, error } = await useAsyncData<{}, NuxtError>('/api/contact', () =>
-        $fetch('/api/contact', {
-            body: {
-                email,
-                content,
-            },
-            method: 'post',
-        })
-    );
+    if (contactForm.value.other !== null) {
+        toast.add({ title: 'Ons systeem verdenkt u van een robot te zijn 🤖' });
+        return;
+    }
+
+    const { data, error } = useCsrfFetch('/api/contact', {
+        body: {
+            email,
+            content,
+        },
+        method: 'post',
+    });
 
     if (!error.value) {
         contactForm.value.content = '';
         contactForm.value.email = '';
-    
-        alert('Uw bericht is verzonden ✉️');
-    } else {
-        const errorData = error.value.data;
-        let errors: FormError[] = [];
-        
-        Object.keys(errorData.data).forEach((key: string) => {
-            const fieldErrors: unknown[]|{_errors: string[]} = errorData.data[key];
-            
-            if(fieldErrors instanceof Array){
-                return;
-            }
 
-            fieldErrors._errors.forEach((fieldError: string): void => {
-                errors.push( {
-                    path: key,
-                    message: fieldError
-                });
+        toast.add({ title: 'Contact bericht is verzonden ✉️' });
+        return;
+    }
+    
+    const errorData = error.value.data;
+    let errors: FormError[] = [];
+
+    Object.keys(errorData.data).forEach((key: string) => {
+        const fieldErrors: unknown[] | { _errors: string[] } =
+            errorData.data[key];
+
+        if (fieldErrors instanceof Array) {
+            return;
+        }
+
+        fieldErrors._errors.forEach((fieldError: string): void => {
+            errors.push({
+                path: key,
+                message: fieldError,
             });
         });
-        
-        form.value.setErrors(errors)
-    }
+    });
+
+    form.value.setErrors(errors);
+    toast.add({ title: 'contact bericht niet verzonden ❌' });
 };
 </script>

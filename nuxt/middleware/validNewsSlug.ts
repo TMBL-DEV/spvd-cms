@@ -17,9 +17,9 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
     const { data, error } = await useFetch(`/api/blogs/${friendlyUrl}`);
     
-    if (!data.value || !data.value.length || error.value) {
+    if(data.value?.blog === null){
         return notFound();
     }
 
-    useState(friendlyUrl).value = data.value[0];
+    useState(friendlyUrl).value = data.value?.blog;
 });

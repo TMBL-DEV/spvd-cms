@@ -5,21 +5,24 @@ import {
     Strapi4ResponseMany,
     Strapi4ResponseSingle,
 } from '@nuxtjs/strapi/dist/runtime/types';
+import { BLOGS_BY_FRIENDLY_URL } from '../../../utils/graphql/blogByFriendlyUrlQuery';
 
 export default defineEventHandler(async (event) => {
+    const client = useStrapiQL();
     const friendlyUrl = event.path.replace('/api/blogs/', '');
 
-    const { data, error } = await server.useStrapiFetch().get<blogType.blog[]>(
-        '/blogs',
-        {
-            'filters[friendlyUrl][$eq]': friendlyUrl,
-            'populate[0]': 'thumbnail'
-        }
-    );
+    const res = await client(BLOGS_BY_FRIENDLY_URL, {
+        slug: friendlyUrl,
+    });
 
-    if (error) {
-        throw error;
+    const blogs: unknown[] = res.blogs.data;
+    if (blogs.length) {
+        return {
+            blog: blogs[0],
+        };
     }
 
-    return data;
+    return {
+        blog: null,
+    };
 });

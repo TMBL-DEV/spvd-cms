@@ -105,7 +105,7 @@ const send = async <T>(url: string, request: RequestInit) => {
 export const useStrapiFetch = (
     options: strapiFetchOptions = {
         baseUrl: 'http://strapi/api',
-        token: useRuntimeConfig().public.strapiToken,
+        token: useRuntimeConfig().app.strapiToken,
     }
 ) => {
     return {

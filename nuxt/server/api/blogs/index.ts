@@ -6,21 +6,12 @@ import {
     Strapi4ResponseSingle,
 } from '@nuxtjs/strapi/dist/runtime/types';
 import superjson from 'superjson'
+import { BLOGS_INDEX_QUERY } from '../../../utils/graphql/queries/blogsIndexQuery';
 
 
 export default defineEventHandler(async (event) => {
     // const friendlyUrl = event.path.replace('/api/blogs/', '');
+    const client = useStrapiQL();
 
-    const { data, error } = await server.useStrapiFetch().get<Strapi4ResponseData<blogType.blog>[]>(
-        '/blogs',
-        {
-            'populate[0]': 'thumbnail'
-        }
-    );
-
-    if (error) {
-        throw error;
-    }
-
-    return data;
+    return client(BLOGS_INDEX_QUERY);
 });

@@ -1,4 +1,5 @@
 <template>
+    <UNotifications />
     <section class="flex flex-col min-h-screen">
         <header class="h-24 w-full flex bg-white opacity-90  z-10 fixed border-b-2 border-b-slate-200">
             <div class="h-full w-10/12 mx-auto flex justify-between">

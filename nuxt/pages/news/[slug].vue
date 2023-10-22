@@ -1,7 +1,8 @@
 <template>
-    <section class="w-10/12 mx-auto mt-8" v-if="blog">
+    <article class="bg-gradient-to-b from-primary to-side-color w-full">
+        <section class="w-10/12 mx-auto mt-8" v-if="blog">
         <section
-            id="thumbnail-target"
+            ref="thumbnailTarget"
             class="mx-auto w-full h-60 bg-slate-50 bg-opacity-70 border-white border-2 rounded-lg flex justify-center"
         >
             <div
@@ -12,15 +13,19 @@
                 </h1>
             </div>
         </section>
-        <section v-if="parsedMarkdown !== null" class="my-4 w-full max-w-full">
+        <section v-if="parsedMarkdown !== null" class="my-4 w-full max-w-full text-white">
             <pre id="markdown-pre" class="whitespace-pre-wrap">
                 <ContentRendererMarkdown :value="parsedMarkdown"/>
             </pre>
         </section>
     </section>
+    </article>
 </template>
 <script setup lang="ts">
-import { Strapi4Response, Strapi4ResponseData } from '@nuxtjs/strapi/dist/runtime/types';
+import {
+    Strapi4Response,
+    Strapi4ResponseData,
+} from '@nuxtjs/strapi/dist/runtime/types';
 import { MediaData } from '../../types/strapi';
 //@ts-ignore
 import markdownParser from '@nuxt/content/transformers/markdown';
@@ -30,14 +35,16 @@ definePageMeta({
     middleware: ['valid-news-slug'],
 });
 
+const thumbnailTarget = ref();
 const parsedMarkdown = ref<any>(null);
 const friendlyUrl: string = useRoute().path.replace('/news/', '');
 const blog = useState<Strapi4ResponseData<blogType.blog>>(friendlyUrl);
+const parsedMD = await markdownParser.parse(
+    'news',
+    blog.value.attributes.content
+);
 
-markdownParser.parse('news', blog.value.attributes.content).then((res: any) => {
-    parsedMarkdown.value = res;
-});
-
+parsedMarkdown.value = parsedMD;
 
 const getThumbnailFromMedia = (media: {
     data: Strapi4ResponseData<MediaData>;
@@ -49,22 +56,23 @@ const getThumbnailFromMedia = (media: {
 };
 
 const setBackgroundThumbnail = () => {
-    const section = document.getElementById('thumbnail-target');
+    // const section = document.getElementById('thumbnail-target');
 
-    if (blog.value && blog.value.attributes.thumbnail && section) {
+    if (blog.value && blog.value.attributes.thumbnail) {
         const url = getThumbnailFromMedia(blog.value.attributes.thumbnail);
 
         // Set the background image using JavaScript
-        section.style.backgroundImage = `url('${url}')`;
-        section.style.backgroundSize = 'cover';
-        section.style.backgroundPosition = 'center center';
+        thumbnailTarget.value.style.backgroundImage = `url('${url}')`;
+        thumbnailTarget.value.style.backgroundSize = 'cover';
+        thumbnailTarget.value.style.backgroundPosition = 'center center';
     }
 };
 
+
+// setBackgroundThumbnail();
 onMounted(() => {
     setBackgroundThumbnail();
 });
-
 </script>
 <style scoped>
 h1 {

@@ -12,21 +12,21 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "AboutUsContentSections": {
+    "aboutUsContentSections": {
       "type": "component",
       "repeatable": true,
       "component": "structure.section"
     },
-    "MainPoint": {
+    "mainPoint": {
       "type": "media",
-      "multiple": true,
+      "multiple": false,
       "required": false,
       "allowedTypes": [
         "images",
         "videos"
       ]
     },
-    "Title": {
+    "title": {
       "type": "string",
       "required": true
     }

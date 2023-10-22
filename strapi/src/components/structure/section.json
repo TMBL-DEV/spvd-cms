@@ -6,7 +6,7 @@
   },
   "options": {},
   "attributes": {
-    "Heading": {
+    "heading": {
       "type": "string",
       "required": true
     },
@@ -15,12 +15,13 @@
       "required": true
     },
     "optionalMedia": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
       "allowedTypes": [
         "images",
         "videos"
-      ],
-      "type": "media",
-      "multiple": true
+      ]
     }
   }
 }

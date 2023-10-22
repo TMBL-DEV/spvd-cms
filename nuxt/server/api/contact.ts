@@ -11,8 +11,6 @@ export default defineEventHandler(async (event) => {
     const contactForm = ContactForm.safeParse(body);
 
     if (!contactForm.success) {  
-        console.log(contactForm.error.format());
-        // setResponseStatus(event, 400, "reee");
         return sendError(event, createError({message: 'Contact Formulier incorrect', data: contactForm.error.format(), statusCode: 400, statusMessage: 'help me'}));
     }
 
@@ -26,6 +24,7 @@ export default defineEventHandler(async (event) => {
             content,
         })
     );
+    
 
     return server
     .useStrapiFetch()
