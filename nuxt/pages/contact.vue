@@ -79,7 +79,7 @@ const submit = async (e: any) => {
         return;
     }
 
-    const { data, error } = useCsrfFetch('/api/contact', {
+    const { data, error } = await useCsrfFetch('/api/contact', {
         body: {
             email,
             content,
